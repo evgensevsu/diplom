@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
+    <style>
+/* Custom styles that extend the Bootstrap theme */
+
+/* Темная тема */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #f1f1f1;
+    margin: 0;
+    padding: 0;
+}
+
+/* Контейнер для формы */
+.container {
+    background-color: rgba(33, 37, 41, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+/* Заголовок */
+h1 {
+    font-size: 2.5em;
+    color: #6f42c1; /* Фиолетовый цвет */
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Входные поля */
+input {
+    font-size: 1.2em;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 10px 0;
+    width: 100%;
+    max-width: 300px;
+    background-color: #1e1e1e;
+    color: #f1f1f1;
+}
+
+/* Кнопка */
+button {
+    background-color: #6f42c1; /* Фиолетовый цвет */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #5a2d9f; /* Темный фиолетовый */
+}
+
+/* Ссылки */
+p {
+    font-size: 1.1em;
+    margin-top: 20px;
+}
+
+a {
+    color: #6f42c1; /* Фиолетовый цвет */
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #5a2d9f; /* Темный фиолетовый */
+}
+
+/* Стили для раздела быстрых действий */
+.quick-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+}
+
+.quick-actions .btn {
+    background-color: #6f42c1; /* Фиолетовый цвет */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.quick-actions .btn:hover {
+    background-color: #5a2d9f; /* Темный фиолетовый */
+}
+
+.quick-actions .btn-outline-secondary {
+    background-color: transparent;
+    border: 1px solid #6f42c1; /* Фиолетовый цвет */
+    color: #6f42c1; /* Фиолетовый цвет */
+}
+
+.quick-actions .btn-outline-secondary:hover {
+    background-color: #6f42c1; /* Фиолетовый цвет */
+    color: white;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 767.98px) {
+    .container {
+        width: 80%;
+    }
+    h1 {
+        font-size: 2em;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Вход</h1>
+        <form action="/login" method="post">
+            <input type="text" name="username" placeholder="Имя пользователя" required><br><br>
+            <input type="password" name="password" placeholder="Пароль" required><br><br>
+            <button type="submit">Войти</button>
+        </form>
+        <p>Нет аккаунта? <a href="{{ url_for('register') }}">Зарегистрируйтесь здесь</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-0">Интерактивный редактор кода</h2>
+            <p class="text-muted">Практикуйте навыки программирования на Python с помощью нашего онлайн-редактора</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="toggle-dark-mode">
+                    <input type="checkbox" id="toggle-dark-mode" checked>
+                    <span class="slider round"></span>
+                </label>
+                <em class="ms-2">Темная тема</em>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Редактор Python</h5>
+                    <button id="run-code" class="btn btn-success">
+                        <i class="fas fa-play me-1"></i> Запустить
+                    </button>
+                </div>
+                <div class="card-body p-0 code-editor-container">
+                    <textarea id="code-editor" class="form-control">print("Hello, World!")</textarea>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Результат</h5>
+                </div>
+                <div class="card-body" id="code-output">
+                    <div class="text-center text-muted">
+                        <p>Результат выполнения кода будет отображаться здесь</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Ввод данных</h5>
+                </div>
+                <div class="card-body">
+                    <textarea id="input-data" class="form-control" rows="5" placeholder="Входные данные для вашей программы (необязательно)"></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Примеры программ</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <button class="list-group-item list-group-item-action" onclick="loadSampleCode('hello')">
+                        Привет, мир!
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="loadSampleCode('variables')">
+                        Переменные и типы данных
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="loadSampleCode('conditionals')">
+                        Условные операторы
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="loadSampleCode('loops')">
+                        Циклы
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="loadSampleCode('functions')">
+                        Функции
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="loadSampleCode('factorial')">
+                        Пример факториала
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,262 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    {% if 'title' in form.__dict__ and not submission %}
+    <!-- Форма создания/редактирования задания -->
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">{{ legend or 'Детали задания' }}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {% if form.title.errors %}
+                                {{ form.title(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.title.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.title(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.description.label(class="form-label") }}
+                            {% if form.description.errors %}
+                                {{ form.description(class="form-control is-invalid", rows=10) }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.description.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.description(class="form-control", rows=10) }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.tests.label(class="form-label") }}
+                            {% if form.tests.errors %}
+                                {{ form.tests(class="form-control is-invalid", rows=8) }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.tests.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.tests(class="form-control", rows=8) }}
+                            {% endif %}
+                            <div class="form-text">
+                                Введите тестовые случаи в формате JSON массива. Пример: 
+                                <code>[{"input": "тестовый ввод", "expected_output": "ожидаемый вывод"}]</code>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.difficulty.label(class="form-label") }}
+                            {{ form.difficulty(class="form-select") }}
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            {{ form.is_published(class="form-check-input") }}
+                            {{ form.is_published.label(class="form-check-label") }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('assignments') }}" class="btn btn-secondary">Отмена</a>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Отображение задания и форма решения -->
+    <div class="row">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Панель управления</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('assignments') }}">Задания</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ assignment.title }}</li>
+                </ol>
+            </nav>
+            
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">{{ assignment.title }}</h3>
+                    <span class="badge rounded-pill difficulty-badge {{ assignment.difficulty }}">
+                        {% if assignment.difficulty == 'Easy' %}Легкий
+                        {% elif assignment.difficulty == 'Medium' %}Средний
+                        {% elif assignment.difficulty == 'Hard' %}Сложный
+                        {% else %}{{ assignment.difficulty }}{% endif %}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4 lesson-content">
+                        {{ assignment.description|safe }}
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Ваше решение</h5>
+                        </div>
+                        <div class="card-body p-0 code-editor-container">
+                            <div id="editor-container">
+                                <textarea id="code-editor" class="form-control" rows="15"></textarea>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <small class="text-muted">
+                                {% if submission %}
+                                Последняя отправка: {{ submission.date_submitted.strftime('%Y-%m-%d %H:%M') }}
+                                {% else %}
+                                Еще не отправлено
+                                {% endif %}
+                            </small>
+                            <button type="button" id="manual-submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i> Отправить решение
+                            </button>
+                        </div>
+                        
+                        <!-- Скрытая форма для отправки решения -->
+                        <form id="hidden-submit-form" method="POST" action="{{ url_for('submit_assignment', assignment_id=assignment.id) }}" style="display: none;">
+                            {{ form.hidden_tag() }}
+                            <input type="hidden" name="code" id="hidden-code-field">
+                        </form>
+                        
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const manualSubmitBtn = document.getElementById('manual-submit');
+                                const hiddenForm = document.getElementById('hidden-submit-form');
+                                const hiddenCodeField = document.getElementById('hidden-code-field');
+                                
+                                manualSubmitBtn.addEventListener('click', function() {
+                                    // Получаем значение из CodeMirror
+                                    const codeValue = window.codeEditor.getValue();
+                                    console.log("Код:", codeValue);
+                                    
+                                    // Устанавливаем значение в скрытое поле
+                                    hiddenCodeField.value = codeValue;
+                                    
+                                    // Отправляем форму
+                                    hiddenForm.submit();
+                                });
+                            });
+                        </script>
+                    </div>
+                    </div>
+                    
+                    {% if submission %}
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Результаты проверки</h5>
+                            <span class="badge {% if submission.result == 'Passed' %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if submission.result == 'Passed' %}Пройдено{% else %}Не пройдено{% endif %}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <pre class="bg-dark text-light p-3 rounded">{{ submission.feedback }}</pre>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Тестовые случаи</h5>
+                        </div>
+                        <div class="card-body">
+                            <pre class="bg-dark text-light p-3 rounded">{{ assignment.tests }}</pre>
+                        </div>
+                        <div class="card-footer text-end">
+                            <a href="{{ url_for('edit_assignment', assignment_id=assignment.id) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-1"></i> Редактировать задание
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px">
+                <div class="card-header">
+                    <h5 class="mb-0">Информация о задании</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Сложность:</small>
+                        <span class="badge rounded-pill difficulty-badge {{ assignment.difficulty }}">
+                            {% if assignment.difficulty == 'Easy' %}Легкий
+                            {% elif assignment.difficulty == 'Medium' %}Средний
+                            {% elif assignment.difficulty == 'Hard' %}Сложный
+                            {% else %}{{ assignment.difficulty }}{% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Статус:</small>
+                        {% if assignment.is_published %}
+                        <span class="badge bg-success">Опубликовано</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Черновик</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Дата создания:</small>
+                        <span>{{ assignment.date_created.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Последнее обновление:</small>
+                        <span>{{ assignment.date_updated.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Ваш статус:</small>
+                        {% if submission %}
+                            {% if submission.result == 'Passed' %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i> Выполнено
+                            </span>
+                            {% else %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times me-1"></i> Не выполнено
+                            </span>
+                            {% endif %}
+                        {% else %}
+                        <span class="badge bg-secondary">Не отправлено</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Советы:</small>
+                        <ul class="small mb-0">
+                            <li>Внимательно читайте инструкции</li>
+                            <li>Тестируйте код перед отправкой</li>
+                            <li>Вы можете отправить решение повторно</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if form %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endif %}
+{% endblock %}

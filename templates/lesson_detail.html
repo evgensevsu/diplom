@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    {% if form %}
+    <!-- Форма создания/редактирования урока -->
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">{{ legend or 'Детали урока' }}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {% if form.title.errors %}
+                                {{ form.title(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.title.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.title(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.order.label(class="form-label") }}
+                            {% if form.order.errors %}
+                                {{ form.order(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.order.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.order(class="form-control") }}
+                            {% endif %}
+                            <div class="form-text">Порядок отображения урока (напр., 1, 2, 3...)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.content.label(class="form-label") }}
+                            {% if form.content.errors %}
+                                {{ form.content(class="form-control is-invalid", rows=15) }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.content.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.content(class="form-control", rows=15) }}
+                            {% endif %}
+                            <div class="form-text">Поддерживает форматирование Markdown для насыщенного контента.</div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            {{ form.is_published(class="form-check-input") }}
+                            {{ form.is_published.label(class="form-check-label") }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('lessons') }}" class="btn btn-secondary">Отмена</a>
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Отображение урока для всех пользователей -->
+    <div class="row">
+        <div class="col-md-9">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Панель управления</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('lessons') }}">Уроки</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ lesson.title }}</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">{{ lesson.title }}</h2>
+                
+                <div class="btn-group">
+                    <a href="{{ url_for('edit_lesson', lesson_id=lesson.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit me-1"></i> Редактировать урок
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body lesson-content">
+                    {{ lesson.content|safe }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card sticky-top" style="top: 20px">
+                <div class="card-header">
+                    <h5 class="mb-0">Информация об уроке</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Порядок урока:</small>
+                        <span class="badge bg-primary">{{ lesson.order }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Статус:</small>
+                        {% if lesson.is_published %}
+                        <span class="badge bg-success">Опубликован</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Черновик</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Последнее обновление:</small>
+                        <span>{{ lesson.date_updated.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Статус выполнения:</small>
+                        <span class="badge bg-secondary">Не завершен</span>
+                    </div>
+                    
+<div class="d-grid gap-2">
+    <form method="POST" action="{{ url_for('complete_lesson', lesson_id=lesson.id) }}">
+        <button type="submit" class="btn btn-success">
+            <i class="fas fa-check me-1"></i> Отметить как завершенный
+        </button>
+    </form>
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Уведомление о завершении -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="completion-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Урок завершен</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Поздравляем! Вы завершили этот урок.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

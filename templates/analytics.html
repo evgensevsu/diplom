@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Аналитика успеваемости</h1>
+
+    {% if submission_count == 0 %}
+        <div class="alert alert-info">
+            <h4 class="alert-heading">Данные отсутствуют</h4>
+            <p>Пока нет отправленных решений для анализа. Когда ученики начнут отправлять решения, здесь появится аналитика успеваемости.</p>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-dark">
+                        <h5 class="card-title mb-0">Динамика успеваемости</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if performance_chart %}
+                            {{ performance_chart|safe }}
+                        {% else %}
+                            <p class="text-muted">Недостаточно данных для построения графика</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-dark">
+                        <h5 class="card-title mb-0">Количество решений по дням</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if performance_bar %}
+                            {{ performance_bar|safe }}
+                        {% else %}
+                            <p class="text-muted">Недостаточно данных для построения графика</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-dark">
+                        <h5 class="card-title mb-0">Общая статистика решений</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if performance_pie %}
+                            {{ performance_pie|safe }}
+                        {% else %}
+                            <p class="text-muted">Недостаточно данных для построения графика</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-dark">
+                        <h5 class="card-title mb-0">Успеваемость по уровням сложности</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if difficulty_chart %}
+                            {{ difficulty_chart|safe }}
+                        {% else %}
+                            <p class="text-muted">Недостаточно данных для построения графика</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 mb-4">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-dark">
+                        <h5 class="card-title mb-0">Тепловая карта по темам</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if topics_chart %}
+                            {{ topics_chart|safe }}
+                        {% else %}
+                            <p class="text-muted">Недостаточно данных для построения графика</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

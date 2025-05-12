@@ -1,0 +1,217 @@
+/* Custom styles that extend the Bootstrap theme */
+
+/* Sidebar styles */
+.sidebar {
+    height: 100%;
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Main content area */
+.main-content {
+    padding-top: 1.5rem;
+}
+
+/* Dark mode tweaks */
+[data-bs-theme=dark] .sidebar {
+    background-color: rgba(33, 37, 41, 0.95);
+}
+
+[data-bs-theme=dark] .table {
+    --bs-table-hover-color: var(--bs-gray-200);
+}
+
+/* Code editor enhancements */
+.code-editor-container {
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.CodeMirror {
+    border-radius: 0.375rem;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.9rem;
+    height: auto;
+}
+
+/* Custom card styles */
+.card-lesson {
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-lesson:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Badge indicators */
+.difficulty-badge.Easy {
+    background-color: var(--bs-success);
+}
+
+.difficulty-badge.Medium {
+    background-color: var(--bs-warning);
+}
+
+.difficulty-badge.Hard {
+    background-color: var(--bs-danger);
+}
+
+/* Progress indicators */
+.progress-thin {
+    height: 0.5rem;
+}
+
+/* Lesson content styling */
+.lesson-content h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--bs-gray-300);
+}
+
+.lesson-content h2 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.lesson-content h3 {
+    font-size: 1.3rem;
+    margin-top: 1.2rem;
+}
+
+.lesson-content pre {
+    background-color: var(--bs-gray-800);
+    color: var(--bs-light);
+    padding: 1rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+}
+
+.lesson-content code {
+    color: var(--bs-info);
+}
+
+/* Assignment status indicators */
+.assignment-status-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.status-not-submitted {
+    background-color: var(--bs-gray-500);
+}
+
+.status-failed {
+    background-color: var(--bs-danger);
+}
+
+.status-passed {
+    background-color: var(--bs-success);
+}
+
+/* Auth forms */
+.auth-form {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: -100%;
+        width: 80%;
+        max-width: 300px;
+        transition: left 0.3s ease;
+        z-index: 1030;
+    }
+
+    .sidebar.show {
+        left: 0;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* Loading spinner */
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Editor theme toggle */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.theme-switch-wrapper em {
+    margin-left: 10px;
+    font-size: 1rem;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 24px;
+    position: relative;
+    width: 50px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    background-color: white;
+    bottom: 4px;
+    content: "";
+    height: 16px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 16px;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--bs-primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
