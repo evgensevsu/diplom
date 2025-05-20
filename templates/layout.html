@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if title %}{{ title }} - {% endif %}Учебно-программный комплекс</title>
     
-    <!-- Bootstrap CSS -->
+
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
     
-    <!-- Font Awesome -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- CodeMirror for code editor -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/darcula.min.css">
     
-    <!-- Custom CSS -->
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
     
     {% block styles %}{% endblock %}
@@ -75,7 +75,6 @@
                                 <i class="fas fa-laptop-code me-2"></i> Редактор кода
                             </a>
                         </li>
-                        
                         <!-- Административные инструменты доступны для всех пользователей -->
                         <li class="nav-item mt-3">
                             <div class="sidebar-heading px-3 py-2">
@@ -95,8 +94,6 @@
                     </ul>
                 </div>
             </div>
-            
-            <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">{{ title }}</h1>
@@ -120,20 +117,15 @@
             </main>
         </div>
     </div>
-    
-    <!-- Bootstrap JavaScript Bundle -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- CodeMirror JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
     
-    <!-- Main JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
-    <!-- Page-specific JavaScript -->
     {% block scripts %}{% endblock %}
 </body>
 </html>

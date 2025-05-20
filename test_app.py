@@ -1,191 +1,145 @@
-import unittest
-from app import app, db, User, Client, Note, bcrypt
+import pytest
+from app import app, db, User, Lesson, Assignment
 from flask import url_for
-from flask_login import current_user
-import time
 
-class FlaskTestCase(unittest.TestCase):
+@pytest.fixture(scope='module')
+def test_client():
+    # Создание тестового клиента Flask
+    app.config['TESTING'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+    app.config['SECRET_KEY'] = 'mysecret'
 
-    @classmethod
-    def setUpClass(cls):
-        # Создаем тестовое приложение и тестовую базу данных
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-        app.config['TESTING'] = True
-        app.config['WTF_CSRF_ENABLED'] = False  # Отключаем CSRF для тестов
-        cls.client = app.test_client()
-
-        # Создаем все таблицы для теста
+    with app.test_client() as client:
         with app.app_context():
+            # Создание таблиц в тестовой базе данных
             db.create_all()
-
-    @classmethod
-    def tearDownClass(cls):
-        # Удаляем тестовую базу данных после тестов
+        yield client
         with app.app_context():
+            # Удаление таблиц после выполнения тестов
             db.drop_all()
 
-    # Модульные тесты для моделей
+@pytest.fixture
+def new_user():
+    # Создание нового пользователя для теста
+    user = User(username='testuser', password='password')
+    db.session.add(user)
+    db.session.commit()
+    return user
 
-    def test_create_user(self):
-        # Проверка создания пользователя с корректными данными
-        username = f"testuser_{int(time.time())}"  # Уникальное имя пользователя
-        hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-        user = User(username=username, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+def test_register(test_client):
+    # Тест регистрации нового пользователя
+    response = test_client.post('/register', data={
+        'username': 'testuser',
+        'password': 'password'
+    }, follow_redirects=True)
 
-        # Проверяем, что пользователь был добавлен в базу данных
-        added_user = User.query.filter_by(username=username).first()
-        self.assertIsNotNone(added_user)
-        self.assertEqual(added_user.username, username)
+    assert response.status_code == 200
+    assert 'Зарегистрируйтесь здесь' in response.data.decode('utf-8')  # Проверка строки на странице регистрации
 
-    def test_create_client(self):
-        # Проверка создания клиента с корректными данными
-        username = f"testuser_{int(time.time())}"  # Уникальное имя пользователя
-        hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-        user = User(username=username, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+def test_login(test_client, new_user):
+    # Тест логина пользователя
+    response = test_client.post('/login', data={
+        'username': 'testuser',
+        'password': 'password'
+    }, follow_redirects=True)
 
-        client = Client(
-            first_name="John", last_name="Doe", email="john.doe@example.com",
-            phone="1234567890", address="Some Address", user_id=user.id
-        )
-        db.session.add(client)
-        db.session.commit()
+    assert response.status_code == 200
+    assert 'Привет, testuser' in response.data.decode('utf-8')  # Проверка приветственного сообщения на dashboard
 
-        # Проверяем, что клиент был добавлен в базу данных
-        added_client = Client.query.filter_by(first_name="John").first()
-        self.assertIsNotNone(added_client)
-        self.assertEqual(added_client.first_name, "John")
+def test_dashboard_access(test_client, new_user):
+    # Тест доступности защищённой страницы Dashboard
+    test_client.post('/login', data={
+        'username': 'testuser',
+        'password': 'password'
+    }, follow_redirects=True)
 
-    def test_create_note(self):
-        # Проверка создания заметки для клиента
-        username = f"testuser_{int(time.time())}"  # Уникальное имя пользователя
-        hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-        user = User(username=username, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+    response = test_client.get('/dashboard')
+    assert response.status_code == 200
+    assert 'Панель управления' in response.data.decode('utf-8')  # Проверка наличия панели управления
 
-        client = Client(first_name="John", last_name="Doe", email="john.doe@example.com", phone="1234567890", address="Some Address", user_id=user.id)
-        db.session.add(client)
-        db.session.commit()
+def test_logout(test_client, new_user):
+    # Тест выхода пользователя
+    test_client.post('/login', data={
+        'username': 'testuser',
+        'password': 'password'
+    }, follow_redirects=True)
 
-        note_content = "This is a test note"
-        new_note = Note(client_id=client.id, note=note_content)
-        db.session.add(new_note)
-        db.session.commit()
+    response = test_client.post('/logout', follow_redirects=True)
+    assert response.status_code == 200
+    assert 'Выход' in response.data.decode('utf-8')  # Проверка сообщения о выходе из системы
 
-        # Проверяем, что заметка была добавлена
-        added_note = Note.query.filter_by(client_id=client.id).first()
-        self.assertIsNotNone(added_note)
-        self.assertEqual(added_note.note, note_content)
+def test_create_lesson(test_client, new_user):
+    # Тест создания нового урока
+    test_client.post('/login', data={
+        'username': 'testuser',
+        'password': 'password'
+    }, follow_redirects=True)
 
-    def test_update_client(self):
-        # Проверка обновления информации о клиенте
-        username = f"testuser_{int(time.time())}"  # Уникальное имя пользователя
-        hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-        user = User(username=username, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+    response = test_client.post('/lessons/new', data={
+        'title': 'New Lesson',
+        'content': 'Lesson content here',
+        'order': '1',
+        'is_published': 'True'
+    }, follow_redirects=True)
 
-        client = Client(first_name="John", last_name="Doe", email="john.doe@example.com", phone="1234567890", address="Some Address", user_id=user.id)
-        db.session.add(client)
-        db.session.commit()
+    assert response.status_code == 200
+    assert 'Новый урок' in response.data.decode('utf-8')  # Проверка страницы создания нового урока
 
-        client.first_name = "Jane"
-        db.session.commit()
+def test_lesson_in_db(test_client, new_user):
+    # Проверка, что урок был добавлен в базу данных
+    test_client.post('/login', data={
+        'username': 'testuser',
+        'password': 'password'
+    }, follow_redirects=True)
 
-        updated_client = Client.query.get(client.id)
-        self.assertEqual(updated_client.first_name, "Jane")
+    test_client.post('/lessons/new', data={
+        'title': 'New Lesson',
+        'content': 'Lesson content here',
+        'order': '1',
+        'is_published': 'True'
+    }, follow_redirects=True)
 
-    def test_delete_client(self):
-        # Проверка удаления клиента
-        username = f"testuser_{int(time.time())}"  # Уникальное имя пользователя
-        hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-        user = User(username=username, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+    lesson = Lesson.query.filter_by(title='New Lesson').first()
+    assert lesson is not None
+    assert lesson.title == 'New Lesson'  # Проверка, что урок был добавлен
 
-        client = Client(first_name="John", last_name="Doe", email="john.doe@example.com", phone="1234567890", address="Some Address", user_id=user.id)
-        db.session.add(client)
-        db.session.commit()
+def test_create_assignment(test_client, new_user):
+    # Тест создания нового задания
+    test_client.post('/login', data={
+        'username': 'testuser',
+        'password': 'password'
+    }, follow_redirects=True)
 
-        db.session.delete(client)
-        db.session.commit()
+    response = test_client.post('/assignments/new', data={
+        'title': 'New Assignment',
+        'description': 'Assignment description here',
+        'tests': '{"input": "1", "expected_output": "2"}',
+        'difficulty': 'Easy',
+        'is_published': 'True'
+    }, follow_redirects=True)
 
-        deleted_client = Client.query.get(client.id)
-        self.assertIsNone(deleted_client)
+    assert response.status_code == 200
+    assert 'Новое задание' in response.data.decode('utf-8')  # Проверка страницы создания нового задания
 
-    # Интеграционные тесты для работы с формами и редиректами
+def test_assignment_in_db(test_client, new_user):
+    # Проверка, что задание было добавлено в базу данных
+    test_client.post('/login', data={
+        'username': 'testuser',
+        'password': 'password'
+    }, follow_redirects=True)
 
-    def test_register_user(self):
-        # Проверка регистрации нового пользователя
-        username = f"newuser_{int(time.time())}"  # Уникальное имя пользователя
-        response = self.client.post('/register', data=dict(
-            username=username,
-            password='newpassword'
-        ), follow_redirects=True)
+    test_client.post('/assignments/new', data={
+        'title': 'New Assignment',
+        'description': 'Assignment description here',
+        'tests': '{"input": "1", "expected_output": "2"}',
+        'difficulty': 'Easy',
+        'is_published': 'True'
+    }, follow_redirects=True)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Вход', response.data.decode('utf-8'))  # После регистрации пользователь должен быть перенаправлен на страницу входа
+    assignment = Assignment.query.filter_by(title='New Assignment').first()
+    assert assignment is not None
+    assert assignment.title == 'New Assignment'  # Проверка, что задание было добавлено
 
-    def test_login_valid_user(self):
-        # Проверка успешного входа с корректными данными
-        username = f"testuser_{int(time.time())}"  # Уникальное имя пользователя
-        hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-        user = User(username=username, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
-
-        response = self.client.post('/login', data=dict(
-            username=username,
-            password='testpassword'
-        ), follow_redirects=True)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Планировщик питания', response.data.decode('utf-8'))  # Проверка наличия текста "Планировщик питания"
-
-    def test_add_note_to_client(self):
-        # Тест на добавление заметки клиенту
-        with app.app_context():
-            username = f"testuser_{int(time.time())}"  # Уникальное имя пользователя
-            hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-            user = User(username=username, password=hashed_password)
-            db.session.add(user)
-            db.session.commit()
-
-            client = Client(first_name="John", last_name="Doe", email="john.doe@example.com", phone="1234567890", address="Some Address", user_id=user.id)
-            db.session.add(client)
-            db.session.commit()
-
-            # Добавление заметки
-            note_content = "This is a test note"
-            new_note = Note(client_id=client.id, note=note_content)
-            db.session.add(new_note)
-            db.session.commit()
-
-            # Проверка наличия заметки
-            note = Note.query.filter_by(client_id=client.id).first()
-            self.assertIsNotNone(note)
-            self.assertEqual(note.note, note_content)
-
-    def test_view_client_details(self):
-        # Тест на отображение подробностей клиента
-        with app.app_context():
-            username = f"testuser_{int(time.time())}"  # Уникальное имя пользователя
-            hashed_password = bcrypt.generate_password_hash('testpassword').decode('utf-8')
-            user = User(username=username, password=hashed_password)
-            db.session.add(user)
-            db.session.commit()
-
-            client = Client(first_name="John", last_name="Doe", email="john.doe@example.com", phone="1234567890", address="Some Address", user_id=user.id)
-            db.session.add(client)
-            db.session.commit()
-
-            response = self.client.get(url_for('client_details', client_id=client.id))
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('John Doe', response.data.decode('utf-8'))  # Проверка отображения имени клиента
-
+# Запуск тестов
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

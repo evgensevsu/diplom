@@ -20,12 +20,12 @@ class Lesson(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    order = db.Column(db.Integer, nullable=False)  # Используем "order" как имя столбца
+    order = db.Column(db.Integer, nullable=False)
     is_published = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     date_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    is_completed = db.Column(db.Boolean, default=False)  # Новое поле для отслеживания завершенности урока
-    date_completed = db.Column(db.DateTime, nullable=True)  # Дата завершения урока
+    is_completed = db.Column(db.Boolean, default=False)
+    date_completed = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return f'<Lesson {self.title}>'

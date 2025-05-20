@@ -478,7 +478,7 @@ def analyze_code_route():
     assignment_description = data.get('assignment_description', '')
     test_cases = data.get('test_cases', None)
 
-    # Анализ кода с использованием OpenAI
+    # Анализ кода
     analysis = analyze_code(code, assignment_description, test_cases)
 
     # Если у нас есть концепции для изучения, получаем учебные ресурсы
