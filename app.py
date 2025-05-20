@@ -13,7 +13,7 @@ from flask import jsonify
 # Инициализация объектов
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///crm.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///diplom.db'
 db.init_app(app)  # Инициализация базы данных
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
