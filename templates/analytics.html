@@ -7,9 +7,21 @@
     {% if submission_count == 0 %}
         <div class="alert alert-info">
             <h4 class="alert-heading">Данные отсутствуют</h4>
-            <p>Пока нет отправленных решений для анализа. Когда ученики начнут отправлять решения, здесь появится аналитика успеваемости.</p>
+            <p>Пока нет отправленных решений для анализа.</p>
         </div>
     {% else %}
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="card-title mb-0">Количество пользователей</h5>
+                    </div>
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <div class="h1 text-primary font-weight-bold">{{ user_count }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-12 mb-4">
                 <div class="card border-0 shadow">

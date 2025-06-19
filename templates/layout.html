@@ -4,32 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if title %}{{ title }} - {% endif %}Учебно-программный комплекс</title>
-    
 
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
-    
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/darcula.min.css">
-    
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-    
+
     {% block styles %}{% endblock %}
 </head>
 <body>
 <!-- Навигационная панель -->
-<nav class="navbar navbar-expand-lg navbar-light" style="background: linear-gradient(45deg, #7b56b2, #9d63d1, #a679d6);">
+<nav class="navbar navbar-expand-lg navbar-light custom-navbar">
     <div class="container">
-        <a class="navbar-brand text-white" href="{{ url_for('index') }}"></a>
+        <a class="navbar-brand text-dark" href="{{ url_for('index') }}"></a>
         <div class="d-flex">
             {% if current_user.is_authenticated %}
-                <span class="navbar-text text-white mr-3">
+                <div class="navbar-text-overlay">
                     Привет, {{ current_user.username }}
-                </span>
+                </div>
                 <form action="{{ url_for('logout') }}" method="post">
                     <button class="btn btn-light" type="submit" style="background-color: #7b56b2; color: white;">
                         Выход
@@ -44,7 +37,7 @@
 
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar navigation -->
+            <!-- Панель навигации -->
             <div class="col-md-3 col-lg-2 d-md-block sidebar" id="sidebar-menu">
                 <div class="sidebar-sticky">
                     <div class="d-flex justify-content-between align-items-center p-3 mb-3 border-bottom">
@@ -53,7 +46,7 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    
+
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
@@ -75,7 +68,6 @@
                                 <i class="fas fa-laptop-code me-2"></i> Редактор кода
                             </a>
                         </li>
-                        <!-- Административные инструменты доступны для всех пользователей -->
                         <li class="nav-item mt-3">
                             <div class="sidebar-heading px-3 py-2">
                                 <span class="text-muted text-uppercase">Администрирование</span>
@@ -97,14 +89,14 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">{{ title }}</h1>
-                    
+
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <button class="btn btn-sm btn-outline-secondary d-md-none" id="mobile-menu-toggle">
                             <i class="fas fa-bars"></i> Меню
                         </button>
                     </div>
                 </div>
-                
+
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
@@ -112,7 +104,7 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                
+
                 {% block content %}{% endblock %}
             </main>
         </div>
@@ -123,9 +115,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
-    
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
+
     {% block scripts %}{% endblock %}
 </body>
 </html>

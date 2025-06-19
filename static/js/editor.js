@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize CodeMirror editor
+    // Инициализция редактора CodeMirror
     window.codeEditor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
         mode: 'python',
         theme: 'darcula',
@@ -16,8 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
-    // Adjust editor height
+
     window.codeEditor.setSize(null, 400);
     
     // Execute code function
@@ -25,11 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const code = window.codeEditor.getValue();
         const input = document.getElementById('input-data').value;
         const outputElement = document.getElementById('code-output');
-        
-        // Show loading in output
+
         outputElement.innerHTML = '<div class="text-center"><span class="spinner-border spinner-border-sm"></span> Выполнение кода...</div>';
         
-        // Make API call to execute code
+        // Вызов API
         fetch('/run_code', {
             method: 'POST',
             headers: {
@@ -53,18 +51,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
     
-    // Add event listener to the run button
+
     const runButton = document.getElementById('run-code');
     if (runButton) {
         runButton.addEventListener('click', executeCode);
     }
     
-    // Handle Ctrl+Enter to run code
+    // Ctrl+Enter для запуска кода
     window.codeEditor.setOption('extraKeys', {
         'Ctrl-Enter': executeCode
     });
     
-    // Handle dark mode toggle
+    // Тёмный/светлый режим
     const toggleDarkMode = document.getElementById('toggle-dark-mode');
     if (toggleDarkMode) {
         toggleDarkMode.addEventListener('change', function() {
@@ -79,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Функция для загрузки примеров кода
 function loadSampleCode(type) {
-    // Получаем экземпляр редактора
+
     const codeEditor = document.querySelector('.CodeMirror').CodeMirror;
     
     switch(type) {

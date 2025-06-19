@@ -2,12 +2,12 @@
 
 {% block content %}
 <div class="container">
-    <!-- Unified Dashboard (Student-style) -->
+    <!-- Прогресс -->
     <div class="row mb-4">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
-                     <h3 class="card-title">Ваш прогресс</h3>
+                    <h3 class="card-title">Ваш прогресс</h3>
                     <div class="progress progress-thin mb-3">
                         <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_percentage }}%;"
                              aria-valuenow="{{ progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
@@ -37,8 +37,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Stats Row -->
+    <!-- Статистика -->
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="card bg-success text-white h-100">
@@ -81,7 +80,13 @@
                                 <h6 class="mb-1">{{ lesson.title }}</h6>
                                 <small class="text-muted">Урок {{ lesson.order }}</small>
                             </div>
-                            <span class="badge bg-secondary rounded-pill">Не начат</span>
+                            <span class="badge bg-secondary rounded-pill">
+                                {% if lesson.is_completed %}
+                                    Начат
+                                {% else %}
+                                    Не начат
+                                {% endif %}
+                            </span>
                         </a>
                         {% endfor %}
                     {% else %}
@@ -111,7 +116,13 @@
                                     </span>
                                 </small>
                             </div>
-                            <span class="badge bg-warning text-dark rounded-pill">Ожидает решения</span>
+                            <span class="badge {% if assignment.is_solved %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill">
+                                {% if assignment.is_solved %}
+                                    Решено
+                                {% else %}
+                                    Не решено
+                                {% endif %}
+                            </span>
                         </a>
                         {% endfor %}
                     {% else %}

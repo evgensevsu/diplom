@@ -1,6 +1,4 @@
-/* Custom styles that extend the Bootstrap theme */
-
-/* Sidebar styles */
+/* Стили для боковой панели */
 .sidebar {
     height: 100%;
     min-height: 100vh;
@@ -20,12 +18,12 @@
     overflow-y: auto;
 }
 
-/* Main content area */
+/* Стили для основной страницы */
 .main-content {
     padding-top: 1.5rem;
 }
 
-/* Dark mode tweaks */
+/* Тёмный режим */
 [data-bs-theme=dark] .sidebar {
     background-color: rgba(33, 37, 41, 0.95);
 }
@@ -34,10 +32,45 @@
     --bs-table-hover-color: var(--bs-gray-200);
 }
 
-/* Code editor enhancements */
 .code-editor-container {
     border-radius: 0.375rem;
     overflow: hidden;
+}
+/* Пользовательский фон для панели навигации */
+.custom-navbar {
+    background-color: #ffffff; /* Белый фон */
+    border-bottom: 3px solid #f0f0f0; /* Легкий сероватый оттенок для выделения */
+    position: relative;
+}
+
+/* Стили для текста, который будет поверх */
+.navbar-text-overlay {
+    position: absolute;
+    top: 50%; /* Позиционирование по центру */
+    left: 50%;
+    transform: translate(-50%, -50%); /* Центрирование по оси X и Y */
+    color: #333333;
+    font-size: 1.2rem;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* Стили для контейнера видео */
+.video-container iframe {
+    width: 100% !important;
+    height: 500px !important;
+}
+
+/* Кнопки */
+.custom-navbar .btn-light {
+    background-color: #f8f9fa; /* Светлый фон для кнопок */
+    color: #333; /* Темный текст на кнопке */
+    border: 1px solid #ddd; /* рамка */
+    padding-top: 20px;
+}
+
+.custom-navbar .btn-light:hover {
+    background-color: #e2e6ea;
 }
 
 .CodeMirror {
@@ -47,7 +80,7 @@
     height: auto;
 }
 
-/* Custom card styles */
+/* Стили для уроков */
 .card-lesson {
     height: 100%;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -58,7 +91,7 @@
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
-/* Badge indicators */
+
 .difficulty-badge.Easy {
     background-color: var(--bs-success);
 }
@@ -71,12 +104,12 @@
     background-color: var(--bs-danger);
 }
 
-/* Progress indicators */
+/* Для прогресса */
 .progress-thin {
     height: 0.5rem;
 }
 
-/* Lesson content styling */
+/* Содержание урока */
 .lesson-content h1 {
     font-size: 1.8rem;
     margin-bottom: 1rem;
@@ -107,7 +140,7 @@
     color: var(--bs-info);
 }
 
-/* Assignment status indicators */
+/* Статус задания */
 .assignment-status-indicator {
     width: 15px;
     height: 15px;
@@ -128,13 +161,13 @@
     background-color: var(--bs-success);
 }
 
-/* Auth forms */
+/* Аутентификация */
 .auth-form {
     max-width: 450px;
     margin: 0 auto;
 }
 
-/* Mobile responsiveness */
+/* Адаптив под мобилку */
 @media (max-width: 767.98px) {
     .sidebar {
         position: fixed;
@@ -156,13 +189,13 @@
     }
 }
 
-/* Loading spinner */
+/* Загрузка */
 .loading-spinner {
     width: 3rem;
     height: 3rem;
 }
 
-/* Editor theme toggle */
+/* Смена цвета темы редактора */
 .theme-switch-wrapper {
     display: flex;
     align-items: center;
@@ -214,4 +247,29 @@ input:checked + .slider {
 
 input:checked + .slider:before {
     transform: translateX(26px);
+}
+/* Стили для контейнера компилятора */
+.compiler-container {
+    margin-top: 30px; /* Отступ сверху */
+    margin-bottom: 30px; /* Отступ снизу */
+    padding: 15px;
+    background-color: #ffffff; /* Белый фон */
+    border-radius: 8px; /* Скругленные углы */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень */
+    overflow: hidden;
+}
+
+/* Стили для встроенного JDoodle элемента */
+.jdoodle-embed-container {
+    width: 100%; /* Ширина по умолчанию 100%, чтобы компилятор занимал всю доступную ширину */
+    height: 400px; /* Высота окна компилятора */
+    border: none; /* Без рамки */
+    border-radius: 8px; /* Скругленные углы для компилятора */
+}
+
+/* Для адаптивности на мобильных устройствах */
+@media (max-width: 768px) {
+    .jdoodle-embed-container {
+        height: 300px; /* Уменьшаем высоту для мобильных устройств */
+    }
 }

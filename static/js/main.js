@@ -1,17 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Enable tooltips
+    // Включение подсказок
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     
-    // Enable popovers
+    // Включение всплывающих окон
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
     
-    // Mark lesson as completed
+    // Урок завершен
     const markAsCompleted = document.getElementById('mark-lesson-completed');
     if (markAsCompleted) {
         markAsCompleted.addEventListener('click', function() {
@@ -26,27 +26,28 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Change button appearance and disable it
+
                     this.classList.remove('btn-primary');
                     this.classList.add('btn-success');
                     this.innerHTML = '<i class="fas fa-check"></i> Completed';
                     this.disabled = true;
                     
-                    // Show success notification
+                    // Уведомление об успешном выполнении
                     const toast = new bootstrap.Toast(document.getElementById('completion-toast'));
                     toast.show();
                 } else {
-                    alert(data.message || 'Failed to mark lesson as completed');
+                    alert(data.message || 'Не удалось отметить урок как завершенный');
                 }
             })
+
             .catch((error) => {
-                console.error('Error:', error);
-                alert('An error occurred while marking the lesson as completed');
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отметке урока как завершенного');
             });
         });
     }
     
-    // Handle mobile navigation menu
+    // Для мобильной версии
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     const sidebarMenu = document.getElementById('sidebar-menu');
     
@@ -56,14 +57,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Auto-resize textareas
+    // Автоматическое изсмение текста
     document.querySelectorAll('textarea.auto-resize').forEach(textarea => {
         textarea.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
         });
-        
-        // Initial adjustment
+
         textarea.style.height = 'auto';
         textarea.style.height = (textarea.scrollHeight) + 'px';
     });

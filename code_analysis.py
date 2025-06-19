@@ -5,7 +5,7 @@ import random
 
 # Deepseek API URL и ключ
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/analyze_code"
-DEEPSEEK_API_KEY = "055d7503d5e9e355c40d52bb99427f05"  # Ваш API ключ для Deepseek
+DEEPSEEK_API_KEY = "055d7503d5e9e355c40d52bb99427f05"
 
 # Добавляем переменные для отслеживания запросов
 RATE_LIMIT_WINDOW = 60  # 60 секунд (1 минута)
@@ -37,7 +37,6 @@ def make_api_request(func, *args, **kwargs):
     time_passed = current_time - last_request_time
 
     if time_passed < RATE_LIMIT_WINDOW:
-        # Мы все еще в текущем окне
         if request_count >= MAX_REQUESTS_PER_WINDOW:
             # Достигнут лимит запросов, ожидаем до конца окна
             sleep_time = RATE_LIMIT_WINDOW - time_passed + random.uniform(0.5, 2.0)
@@ -69,7 +68,7 @@ def make_api_request(func, *args, **kwargs):
                 if retry_count >= max_retries:
                     raise e
 
-                # Экспоненциальная задержка с джиттером
+                # Экспоненциальная задержка
                 delay = min(MAX_RETRY_DELAY, MIN_RETRY_DELAY * (2 ** retry_count)) + random.uniform(0.1, 1.0)
                 print(f"Превышен лимит запросов (429). Повторная попытка через {delay:.2f} секунд...")
                 time.sleep(delay)
@@ -148,7 +147,7 @@ def analyze_code(code, assignment_description=None, test_cases=None, language="p
 
 def get_learning_resources(concepts, language="python"):
     """
-    Получает учебные ресурсы по заданным концепциям через Deepsek API.
+    Получаем учебные ресурсы по заданным концепциям через Deepsek API.
 
     Args:
         concepts (list): Список концепций для изучения

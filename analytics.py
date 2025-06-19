@@ -2,7 +2,7 @@ import os
 import base64
 from io import BytesIO
 import matplotlib
-matplotlib.use('Agg')  # Необходимо для работы без GUI
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import plotly.graph_objects as go
@@ -13,7 +13,7 @@ import numpy as np
 
 def generate_performance_chart(submissions, chart_type='line'):
     """
-    Генерирует график успеваемости на основе отправленных решений.
+    Генерируем график успеваемости на основе отправленных решений.
     
     Args:
         submissions (list): Список отправленных решений
@@ -118,7 +118,7 @@ def generate_performance_chart(submissions, chart_type='line'):
 
 def generate_difficulty_distribution(assignments, submissions):
     """
-    Генерирует график распределения успеваемости по уровням сложности.
+    Генерируем график распределения успеваемости по уровням сложности.
     
     Args:
         assignments (list): Список заданий
@@ -152,7 +152,7 @@ def generate_difficulty_distribution(assignments, submissions):
         'Easy': '#2ecc71',  # Зеленый
         'Medium': '#f39c12',  # Желтый
         'Hard': '#e74c3c',  # Красный
-        'Unknown': '#95a5a6'  # Серый
+        'Unknown': '#95a5a6'
     }
     
     bar_colors = [colors.get(d, '#95a5a6') for d in difficulties]
@@ -179,8 +179,7 @@ def generate_difficulty_distribution(assignments, submissions):
 
 def generate_topic_performance(assignments, submissions):
     """
-    Генерирует тепловую карту успеваемости по разным темам.
-    Предполагается, что заголовки заданий содержат информацию о теме.
+    Генерируем тепловую карту успеваемости по разным темам.
     
     Args:
         assignments (list): Список заданий
@@ -192,11 +191,10 @@ def generate_topic_performance(assignments, submissions):
     if not assignments or not submissions:
         return None
     
-    # Извлекаем темы из названий заданий (можно улучшить, если есть явное поле темы)
-    # Для демонстрации используем первое слово из названия как тему
+    # Извлекаем темы из названий заданий
     topics = {}
     for a in assignments:
-        # Примитивное определение темы - берем первое слово из названия задания
+        # Примитивное определение темы - берем первое слово из названия
         topic = a.title.split()[0] if a.title else 'Unknown'
         topics[a.id] = topic
     
@@ -209,7 +207,7 @@ def generate_topic_performance(assignments, submissions):
         if sub.result == 'Passed':
             topic_data[topic]['passed'] += 1
     
-    # Отбираем только темы с достаточным количеством данных
+    # Отбираем  темы с достаточным количеством данных
     significant_topics = {t: data for t, data in topic_data.items() if data['total'] >= 3}
     
     if not significant_topics:

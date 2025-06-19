@@ -10,6 +10,8 @@ from code_execution import execute_code
 from code_analysis import analyze_code, get_learning_resources
 from analytics import generate_performance_chart, generate_difficulty_distribution, generate_topic_performance
 from flask import jsonify
+from werkzeug.security import generate_password_hash
+import re
 # Инициализация объектов
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecret'
@@ -58,6 +60,7 @@ def logout():
     flash('Вы успешно вышли из системы.', 'info')
     return redirect(url_for('login'))  # Перенаправление на страницу входа
 
+
 # Стартовая страница (перенаправление на dashboard)
 @app.route('/')
 @login_required
@@ -83,6 +86,17 @@ def dashboard():
     lessons = Lesson.query.order_by(Lesson.date_created.desc()).limit(5).all()
     assignments = Assignment.query.order_by(Assignment.date_created.desc()).limit(5).all()
 
+    # Определяем статус для каждого задания
+    for assignment in assignments:
+        # Проверяем, есть ли отправленные решения и прошло ли хотя бы одно из них
+        solved = False
+        for submission in assignment.submissions:
+            if submission.result == 'Passed':  # Если решение прошло проверку
+                solved = True
+                break
+        # Добавляем атрибут is_solved, который будет вычисляться
+        assignment.is_solved = solved
+
     return render_template(
         'dashboard.html',
         lesson_count=lesson_count,
@@ -94,11 +108,40 @@ def dashboard():
         progress_percentage=progress_percentage
     )
 
+
 @app.route('/lessons')
 @login_required
 def lessons():
     lessons = Lesson.query.all()  # Получаем все уроки из базы данных
     return render_template('lessons.html', lessons=lessons)
+
+
+@app.route('/lessons/<int:lesson_id>', methods=['GET', 'POST'])
+def lesson_detail(lesson_id):
+    lesson = Lesson.query.get_or_404(lesson_id)
+
+    # Проверка, опубликован ли урок
+    if not lesson.is_published:
+        abort(404)
+
+    # Регулярное выражение для поиска ссылок на Rutube и YouTube
+    video_pattern = r"(https?://(?:www\.)?rutube\.ru/video/([a-zA-Z0-9_-]+)/?)"
+    video_url = None
+    video_id = None
+
+    # Пытаемся найти ссылку на видео в контенте урока
+    match = re.search(video_pattern, lesson.content)
+    if match:
+        video_url = match.group(1)  # Ссылка на видео
+        video_id = match.group(2)  # ID видео
+
+    return render_template(
+        'lesson_detail.html',
+        title=lesson.title,
+        lesson=lesson,
+        video_url=video_url,
+        video_id=video_id
+    )
 
 @app.route('/assignments')
 @login_required
@@ -106,18 +149,56 @@ def assignments():
     assignments = Assignment.query.all()  # Получаем все задания из базы данных
     return render_template('assignments.html', assignments=assignments)
 
-
-
-@app.route('/admin_panel')
+@app.route('/admin_panel', methods=['GET', 'POST'])
 @login_required
 def admin_panel():
-    return render_template('admin_panel.html')  # шаблон для панели администратора
+    search_query = request.args.get('search', '')
+    if search_query:
+        users = User.query.filter(User.username.like(f"%{search_query}%")).all()
+    else:
+        users = User.query.all()
 
+    if request.method == 'POST' and 'create_user' in request.form:
+        username = request.form.get('username')
+        password = request.form.get('password')
+        hashed_password = generate_password_hash(password)
+
+        new_user = User(username=username, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Пользователь успешно создан!', 'success')
+        return redirect(url_for('admin_panel'))
+
+    if request.method == 'POST' and 'delete_user' in request.form:
+        username = request.form.get('username_to_delete')
+        user_to_delete = User.query.filter_by(username=username).first()
+        if user_to_delete:
+            db.session.delete(user_to_delete)
+            db.session.commit()
+            flash(f'Пользователь {username} был удален!', 'success')
+        else:
+            flash(f'Пользователь {username} не найден!', 'danger')
+        return redirect(url_for('admin_panel'))
+
+    # Обработка активации и деактивации пользователя
+    if request.method == 'POST' and 'toggle_user_status' in request.form:
+        username = request.form.get('username_to_toggle')
+        user = User.query.filter_by(username=username).first()
+        if user:
+            user.is_active = not user.is_active
+            db.session.commit()
+            flash(f'Статус пользователя {username} изменен!', 'success')
+        return redirect(url_for('admin_panel'))
+
+    return render_template('admin_panel.html', users=users)
 
 @app.route('/analytics')
 def analytics_dashboard():
     assignments = Assignment.query.all()
     submissions = Submission.query.all()
+
+    # Получаем количество пользователей
+    user_count = User.query.count()  # Количество пользователей
 
     # Генерация графиков успеваемости
     performance_chart = generate_performance_chart(submissions, 'line')
@@ -138,9 +219,9 @@ def analytics_dashboard():
         performance_pie=performance_pie,
         difficulty_chart=difficulty_chart,
         topics_chart=topics_chart,
+        user_count=user_count,
         submission_count=len(submissions)
     )
-
 
 @app.route('/lessons/new', methods=['GET', 'POST'])
 def new_lesson():
@@ -157,24 +238,7 @@ def new_lesson():
         flash('Урок успешно создан!', 'success')
         return redirect(url_for('lessons'))
 
-    # Добавляем пустой параметр lesson=None для поддержки шаблона
     return render_template('lesson_detail.html', title='Новый урок', form=form, legend='Новый урок', lesson=None)
-
-
-@app.route('/lessons/<int:lesson_id>')
-def lesson_detail(lesson_id):
-    lesson = Lesson.query.get_or_404(lesson_id)
-
-    # Проверяем, опубликован ли урок
-    if not lesson.is_published:
-        abort(404)
-
-    return render_template(
-        'lesson_detail.html',
-        title=lesson.title,
-        lesson=lesson
-    )
-
 
 @app.route('/lessons/<int:lesson_id>/edit', methods=['GET', 'POST'])
 def edit_lesson(lesson_id):
@@ -197,10 +261,8 @@ def edit_lesson(lesson_id):
         form.order.data = str(lesson.order)
         form.is_published.data = lesson.is_published
 
-    # Передаем параметр lesson для доступа в шаблоне
     return render_template('lesson_detail.html', title='Редактирование урока', form=form, legend='Редактирование урока',
                            lesson=lesson)
-
 
 @app.route('/lessons/<int:lesson_id>/complete', methods=['POST'])
 def complete_lesson(lesson_id):
@@ -208,7 +270,7 @@ def complete_lesson(lesson_id):
     lesson = Lesson.query.get_or_404(lesson_id)
 
     # Устанавливаем статус завершения урока
-    lesson.is_completed = True  # Убедитесь, что у модели Lesson есть поле is_completed
+    lesson.is_completed = True
     lesson.date_completed = datetime.utcnow()  # Устанавливаем дату завершения
 
     # Сохраняем изменения в базе данных
@@ -224,15 +286,11 @@ def complete_lesson(lesson_id):
 def delete_lesson(lesson_id):
     lesson = Lesson.query.get_or_404(lesson_id)
 
-    # Убедитесь, что у пользователя есть права на удаление урока (например, только администратор или создатель)
     db.session.delete(lesson)
     db.session.commit()
 
     flash('Урок успешно удален!', 'success')
     return redirect(url_for('lessons'))
-
-
-
 
 
 @app.route('/assignments/<int:assignment_id>')
@@ -258,7 +316,6 @@ def assignment_detail(assignment_id):
         submission=submission
     )
 
-
 @app.route('/assignments/new', methods=['GET', 'POST'])
 def new_assignment():
     form = AssignmentForm()
@@ -282,7 +339,6 @@ def new_assignment():
         flash('Задание успешно создано!', 'success')
         return redirect(url_for('assignments'))
 
-    # Явно указываем, что submission=None и assignment=None, чтобы избежать ошибок в шаблоне
     return render_template('assignment_detail.html', title='Новое задание', form=form, legend='Новое задание',
                            submission=None, assignment=None)
 
@@ -321,7 +377,6 @@ def edit_assignment(assignment_id):
     # Передаем также assignment для доступа в шаблоне и submission=None чтобы избежать ошибок
     return render_template('assignment_detail.html', title='Редактирование задания', form=form,
                            legend='Редактирование задания', assignment=assignment, submission=None)
-
 
 @app.route('/assignments/<int:assignment_id>/submit', methods=['GET', 'POST'])
 def submit_assignment(assignment_id):
@@ -429,11 +484,10 @@ def submit_assignment(assignment_id):
 
             # Создаем новое представление
             submission = Submission(
-                student_name="Ученик",  # Фиксированное имя, т.к. убрали аутентификацию
+                student_name="Ученик",
                 assignment_id=assignment_id,
                 code=code,
                 result="Passed" if all_passed else "Failed",
-                # Сохраняем в базе на английском для совместимости с шаблонами
                 feedback="\n".join(feedback)
             )
             db.session.add(submission)
@@ -453,7 +507,6 @@ def submit_assignment(assignment_id):
     # Если метод GET, перенаправляем на страницу задания
     return redirect(url_for('assignment_detail', assignment_id=assignment_id))
 
-
 @app.route('/submissions/<int:submission_id>')
 def view_submission(submission_id):
     submission = Submission.query.get_or_404(submission_id)
@@ -465,6 +518,17 @@ def view_submission(submission_id):
         submission=submission,
         assignment=assignment
     )
+@app.route('/assignments/<int:assignment_id>/delete', methods=['POST'])
+@login_required
+def delete_assignment(assignment_id):
+    assignment = Assignment.query.get_or_404(assignment_id)
+
+    # Удаляем задание из базы данных
+    db.session.delete(assignment)
+    db.session.commit()
+
+    flash('Задание успешно удалено!', 'success')
+    return redirect(url_for('assignments'))
 
 
 @app.route('/analyze_code', methods=['POST'])
@@ -496,7 +560,6 @@ def analyze_code_route():
 @app.route('/code_editor')
 def code_editor():
     return render_template('code_editor.html', title='Интерактивный редактор кода')
-
 
 @app.route('/run_code', methods=['POST'])
 def run_code():

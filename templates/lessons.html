@@ -35,6 +35,11 @@
                         <a href="{{ url_for('edit_lesson', lesson_id=lesson.id) }}" class="btn btn-sm btn-outline-secondary">
                             <i class="fas fa-edit"></i> Редактировать
                         </a>
+                        <form action="{{ url_for('delete_lesson', lesson_id=lesson.id) }}" method="POST" class="ms-2">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash-alt"></i> Удалить
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <div class="card-footer text-muted small">
@@ -49,7 +54,7 @@
         <h4 class="alert-heading">Уроки пока не доступны</h4>
         <p>Уроки будут добавлены в ближайшее время.</p>
         <hr>
-        <p class="mb-0">Начните с создания вашего первого урока.</p>
+        <p class="mb-0">Создать первый урок.</p>
         <div class="mt-3">
             <a href="{{ url_for('new_lesson') }}" class="btn btn-primary">
                 <i class="fas fa-plus-circle me-2"></i> Создать новый урок

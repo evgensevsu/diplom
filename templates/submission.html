@@ -103,8 +103,8 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left me-1"></i> Назад к панели администратора
+                    <a href="{{ url_for('lessons') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Перейти к теории
                     </a>
                 </div>
             </div>
@@ -179,7 +179,7 @@
                             document.addEventListener('DOMContentLoaded', function() {
                                 const accordionContainer = document.getElementById('testCasesAccordion');
                                 
-                                // Если нет тестовых случаев, показываем сообщение
+                                // Если нет тестовых случаев
                                 if (testCases.length === 0) {
                                     const noTestsMessage = document.createElement('div');
                                     noTestsMessage.className = 'alert alert-warning mb-0';
@@ -188,7 +188,7 @@
                                     return;
                                 }
                                 
-                                // Создаем аккордеон для каждого тестового случая
+                                // Создаем  для каждого тестового случая
                                 testCases.forEach((test, index) => {
                                     const accordionItem = document.createElement('div');
                                     accordionItem.className = 'accordion-item';
@@ -283,8 +283,7 @@
         const code = document.querySelector('.code-display code').textContent;
         // Получаем описание задания
         const assignmentDescription = document.querySelector('.p-3.rounded.border').innerHTML;
-        
-        // Получаем тестовые случаи
+                // Получаем тестовые случаи
         const testCases = [];
         document.querySelectorAll('.accordion-item').forEach((item, index) => {
             const input = item.querySelector('.mb-2 pre').textContent;
@@ -300,7 +299,7 @@
             analysisError.style.display = 'none';
             learningResourcesContainer.style.display = 'none';
             
-            // Прокручиваем страницу к контейнеру анализа
+
             analysisContainer.scrollIntoView({behavior: 'smooth'});
             
             // Отправляем запрос на анализ кода
@@ -317,14 +316,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Скрываем индикатор загрузки
+
                 analysisLoading.style.display = 'none';
                 
                 if (data.success) {
-                    // Показываем контент анализа
+
                     analysisContent.style.display = 'block';
-                    
-                    // Заполняем элементы UI данными анализа
+
                     const analysis = data.analysis;
                     
                     // Проблемы
@@ -375,7 +373,7 @@
                         learningResourcesContainer.style.display = 'block';
                         learningResourcesContent.innerHTML = '';
                         
-                        // Создаем аккордеон для учебных ресурсов
+                        // Создаем  для учебных ресурсов
                         const accordion = document.createElement('div');
                         accordion.className = 'accordion';
                         accordion.id = 'learningResourcesAccordion';
