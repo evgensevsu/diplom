@@ -40,7 +40,7 @@
                         <button id="analyze-code-btn" class="btn btn-primary mb-3">
                             <i class="fas fa-robot me-1"></i> Анализировать код с помощью ИИ
                         </button>
-                        
+
                         <div id="ai-analysis-container" style="display: none;">
                             <div class="card border-info mb-3">
                                 <div class="card-header bg-info text-white">
@@ -53,23 +53,23 @@
                                         </div>
                                         <p class="mt-2">Анализируем ваш код с помощью ИИ...</p>
                                     </div>
-                                    
+
                                     <div id="analysis-content" style="display: none;">
                                         <div id="analysis-issues" class="mb-3">
                                             <h6 class="text-danger">Выявленные проблемы:</h6>
                                             <ul id="issues-list" class="list-group mb-3"></ul>
                                         </div>
-                                        
+
                                         <div id="analysis-suggestions" class="mb-3">
                                             <h6 class="text-success">Предложения по улучшению:</h6>
                                             <ul id="suggestions-list" class="list-group mb-3"></ul>
                                         </div>
-                                        
+
                                         <div id="analysis-explanation" class="mb-3">
                                             <h6>Пояснение:</h6>
                                             <div id="explanation-text" class="p-3 bg-light rounded"></div>
                                         </div>
-                                        
+
                                         <div id="improved-code-section" class="mb-3">
                                             <h6>Улучшенный код:</h6>
                                             <div class="bg-dark text-light p-3 rounded">
@@ -77,13 +77,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div id="analysis-error" class="alert alert-danger" style="display: none;">
                                         Произошла ошибка при анализе кода. Пожалуйста, попробуйте позже.
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div id="learning-resources-container" class="card border-success mb-3" style="display: none;">
                                 <div class="card-header bg-success text-white">
                                     <h5 class="mb-0">Материалы для изучения</h5>
@@ -94,7 +94,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <h5>Описание задания</h5>
                         <div class="p-3 rounded border">
@@ -109,7 +109,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header">
@@ -127,7 +127,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <h6 class="text-muted mb-1">Задание</h6>
                         <strong>{{ assignment.title }}</strong>
@@ -140,12 +140,12 @@
                             </span>
                         </div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <h6 class="text-muted mb-1">Дата отправки</h6>
                         <div>{{ submission.date_submitted.strftime('%Y-%m-%d %H:%M:%S') }}</div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <h6 class="text-muted mb-1">Результат</h6>
                         <div>
@@ -160,7 +160,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">Тестовые случаи</h5>
@@ -178,7 +178,7 @@
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
                                 const accordionContainer = document.getElementById('testCasesAccordion');
-                                
+
                                 // Если нет тестовых случаев
                                 if (testCases.length === 0) {
                                     const noTestsMessage = document.createElement('div');
@@ -187,16 +187,16 @@
                                     accordionContainer.appendChild(noTestsMessage);
                                     return;
                                 }
-                                
+
                                 // Создаем  для каждого тестового случая
                                 testCases.forEach((test, index) => {
                                     const accordionItem = document.createElement('div');
                                     accordionItem.className = 'accordion-item';
-                                    
+
                                     const header = document.createElement('h2');
                                     header.className = 'accordion-header';
                                     header.id = `testCase${index + 1}`;
-                                    
+
                                     const button = document.createElement('button');
                                     button.className = 'accordion-button collapsed';
                                     button.type = 'button';
@@ -205,53 +205,53 @@
                                     button.setAttribute('aria-expanded', 'false');
                                     button.setAttribute('aria-controls', `collapseTest${index + 1}`);
                                     button.textContent = `Тестовый случай #${index + 1}`;
-                                    
+
                                     header.appendChild(button);
                                     accordionItem.appendChild(header);
-                                    
+
                                     const collapseDiv = document.createElement('div');
                                     collapseDiv.id = `collapseTest${index + 1}`;
                                     collapseDiv.className = 'accordion-collapse collapse';
                                     collapseDiv.setAttribute('aria-labelledby', `testCase${index + 1}`);
                                     collapseDiv.setAttribute('data-bs-parent', '#testCasesAccordion');
-                                    
+
                                     const body = document.createElement('div');
                                     body.className = 'accordion-body';
-                                    
+
                                     // Входные данные
                                     const inputDiv = document.createElement('div');
                                     inputDiv.className = 'mb-2';
-                                    
+
                                     const inputLabel = document.createElement('small');
                                     inputLabel.className = 'text-muted d-block';
                                     inputLabel.textContent = 'Ввод:';
-                                    
+
                                     const inputPre = document.createElement('pre');
                                     inputPre.className = 'mb-2 p-2 bg-dark text-light rounded';
                                     inputPre.textContent = test.input !== undefined ? test.input : '';
-                                    
+
                                     inputDiv.appendChild(inputLabel);
                                     inputDiv.appendChild(inputPre);
                                     body.appendChild(inputDiv);
-                                    
+
                                     // Ожидаемый вывод
                                     const outputDiv = document.createElement('div');
-                                    
+
                                     const outputLabel = document.createElement('small');
                                     outputLabel.className = 'text-muted d-block';
                                     outputLabel.textContent = 'Ожидаемый вывод:';
-                                    
+
                                     const outputPre = document.createElement('pre');
                                     outputPre.className = 'mb-0 p-2 bg-dark text-light rounded';
                                     outputPre.textContent = test.expected_output !== undefined ? test.expected_output : '';
-                                    
+
                                     outputDiv.appendChild(outputLabel);
                                     outputDiv.appendChild(outputPre);
                                     body.appendChild(outputDiv);
-                                    
+
                                     collapseDiv.appendChild(body);
                                     accordionItem.appendChild(collapseDiv);
-                                    
+
                                     accordionContainer.appendChild(accordionItem);
                                 });
                             });
@@ -278,7 +278,7 @@
         const improvedCode = document.getElementById('improved-code');
         const learningResourcesContainer = document.getElementById('learning-resources-container');
         const learningResourcesContent = document.getElementById('learning-resources-content');
-        
+
         // Получаем код из элемента на странице
         const code = document.querySelector('.code-display code').textContent;
         // Получаем описание задания
@@ -290,7 +290,7 @@
             const expectedOutput = item.querySelector('div:last-child pre').textContent;
             testCases.push({ input, expected_output: expectedOutput });
         });
-        
+
         analyzeBtn.addEventListener('click', function() {
             // Показываем контейнер анализа и индикатор загрузки
             analysisContainer.style.display = 'block';
@@ -298,10 +298,10 @@
             analysisContent.style.display = 'none';
             analysisError.style.display = 'none';
             learningResourcesContainer.style.display = 'none';
-            
+
 
             analysisContainer.scrollIntoView({behavior: 'smooth'});
-            
+
             // Отправляем запрос на анализ кода
             fetch('/analyze_code', {
                 method: 'POST',
@@ -318,13 +318,13 @@
             .then(data => {
 
                 analysisLoading.style.display = 'none';
-                
+
                 if (data.success) {
 
                     analysisContent.style.display = 'block';
 
                     const analysis = data.analysis;
-                    
+
                     // Проблемы
                     issuesList.innerHTML = '';
                     if (analysis.issues && analysis.issues.length > 0) {
@@ -340,7 +340,7 @@
                         li.textContent = 'Проблем не обнаружено';
                         issuesList.appendChild(li);
                     }
-                    
+
                     // Предложения
                     suggestionsList.innerHTML = '';
                     if (analysis.suggestions && analysis.suggestions.length > 0) {
@@ -356,10 +356,10 @@
                         li.textContent = 'Нет предложений по улучшению';
                         suggestionsList.appendChild(li);
                     }
-                    
+
                     // Пояснение
                     explanationText.innerHTML = analysis.explanation || 'Нет пояснений';
-                    
+
                     // Улучшенный код
                     if (analysis.improved_code) {
                         improvedCode.textContent = analysis.improved_code;
@@ -367,29 +367,29 @@
                     } else {
                         document.getElementById('improved-code-section').style.display = 'none';
                     }
-                    
+
                     // Учебные ресурсы
                     if (data.learning_resources && Object.keys(data.learning_resources).length > 0) {
                         learningResourcesContainer.style.display = 'block';
                         learningResourcesContent.innerHTML = '';
-                        
+
                         // Создаем  для учебных ресурсов
                         const accordion = document.createElement('div');
                         accordion.className = 'accordion';
                         accordion.id = 'learningResourcesAccordion';
-                        
+
                         let index = 0;
                         for (const concept in data.learning_resources) {
                             index++;
                             const resource = data.learning_resources[concept];
-                            
+
                             const accordionItem = document.createElement('div');
                             accordionItem.className = 'accordion-item';
-                            
+
                             const accordionHeader = document.createElement('h2');
                             accordionHeader.className = 'accordion-header';
                             accordionHeader.id = `resource${index}`;
-                            
+
                             const accordionButton = document.createElement('button');
                             accordionButton.className = 'accordion-button collapsed';
                             accordionButton.type = 'button';
@@ -398,35 +398,35 @@
                             accordionButton.setAttribute('aria-expanded', 'false');
                             accordionButton.setAttribute('aria-controls', `collapseResource${index}`);
                             accordionButton.textContent = concept;
-                            
+
                             accordionHeader.appendChild(accordionButton);
-                            
+
                             const accordionCollapse = document.createElement('div');
                             accordionCollapse.id = `collapseResource${index}`;
                             accordionCollapse.className = 'accordion-collapse collapse';
                             accordionCollapse.setAttribute('aria-labelledby', `resource${index}`);
                             accordionCollapse.setAttribute('data-bs-parent', '#learningResourcesAccordion');
-                            
+
                             const accordionBody = document.createElement('div');
                             accordionBody.className = 'accordion-body';
-                            
+
                             // Описание
                             const descriptionTitle = document.createElement('h6');
                             descriptionTitle.className = 'mt-2';
                             descriptionTitle.textContent = 'Описание:';
                             accordionBody.appendChild(descriptionTitle);
-                            
+
                             const description = document.createElement('p');
                             description.textContent = resource.description || 'Нет описания';
                             accordionBody.appendChild(description);
-                            
+
                             // Примеры
                             if (resource.examples && resource.examples.length > 0) {
                                 const examplesTitle = document.createElement('h6');
                                 examplesTitle.className = 'mt-3';
                                 examplesTitle.textContent = 'Примеры:';
                                 accordionBody.appendChild(examplesTitle);
-                                
+
                                 resource.examples.forEach(example => {
                                     const exampleCode = document.createElement('pre');
                                     exampleCode.className = 'p-2 bg-dark text-light rounded';
@@ -436,25 +436,25 @@
                                     accordionBody.appendChild(exampleCode);
                                 });
                             }
-                            
+
                             // Практика
                             if (resource.practice) {
                                 const practiceTitle = document.createElement('h6');
                                 practiceTitle.className = 'mt-3';
                                 practiceTitle.textContent = 'Практика:';
                                 accordionBody.appendChild(practiceTitle);
-                                
+
                                 const practice = document.createElement('p');
                                 practice.textContent = resource.practice;
                                 accordionBody.appendChild(practice);
                             }
-                            
+
                             accordionCollapse.appendChild(accordionBody);
                             accordionItem.appendChild(accordionHeader);
                             accordionItem.appendChild(accordionCollapse);
                             accordion.appendChild(accordionItem);
                         }
-                        
+
                         learningResourcesContent.appendChild(accordion);
                     }
                 } else {

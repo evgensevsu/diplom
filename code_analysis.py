@@ -127,7 +127,7 @@ def analyze_code(code, assignment_description=None, test_cases=None, language="p
         else:
             print(f"Ошибка при анализе кода: {response.text}")
             return {
-                "issues": ["Не удалось проанализировать код с помощью Deepsek."],
+                "issues": ["Не удалось проанализировать код с помощью Deepsek. Сервер перегружен"],
                 "suggestions": ["Попробуйте позже."],
                 "explanation": f"Произошла ошибка: {response.text}",
                 "improved_code": "",
@@ -137,7 +137,7 @@ def analyze_code(code, assignment_description=None, test_cases=None, language="p
     except Exception as e:
         print(f"Ошибка при отправке запроса: {str(e)}")
         return {
-            "issues": ["Не удалось проанализировать код с помощью Deepsek."],
+            "issues": ["Не удалось проанализировать код с помощью Deepsek. Сервер перегружен"],
             "suggestions": ["Попробуйте позже."],
             "explanation": f"Произошла ошибка при запросе: {str(e)}",
             "improved_code": "",
